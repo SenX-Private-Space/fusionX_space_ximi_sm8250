@@ -1866,6 +1866,8 @@ extern const u32		sched_prio_to_wmult[40];
 
 #define RETRY_TASK		((void *)-1UL)
 
+extern s64 update_curr_common(struct rq *rq);
+
 struct sched_class {
 	const struct sched_class *next;
 
@@ -2088,12 +2090,12 @@ static inline void add_nr_running(struct rq *rq, unsigned count)
 
 	rq->nr_running = prev_nr + count;
 
-#ifdef CONFIG_SMP
 	if (prev_nr < 2 && rq->nr_running >= 2) {
+#ifdef CONFIG_SMP
 		if (!READ_ONCE(rq->rd->overload))
 			WRITE_ONCE(rq->rd->overload, 1);
-	}
 #endif
+	}
 
 	sched_update_tick_dependency(rq);
 }
